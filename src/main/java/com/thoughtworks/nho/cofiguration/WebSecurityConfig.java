@@ -36,9 +36,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.headers().cacheControl().and().contentTypeOptions().and().frameOptions();
         http.headers().xssProtection().and().httpStrictTransportSecurity();
+        http.headers().frameOptions().disable();
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/authentication").permitAll()
+                .antMatchers( "/user/**").permitAll()
+                .antMatchers( "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
