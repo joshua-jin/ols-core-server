@@ -27,8 +27,7 @@ class UserControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(user)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("new_future_star"))
-                .andExpect(jsonPath("$.role").value("SYSTEM_ADMIN"));
+                .andExpect(jsonPath("$.username").value("new_future_star"));
     }
 
 }
