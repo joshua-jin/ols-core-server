@@ -21,7 +21,7 @@ class UserControllerTest extends BaseControllerTest {
         Privilege privilege = Privilege.builder().name("创建用户").symbol(Privilege.Symbol.CREATE_USER).build();
 
         User user = User.builder().name("new_future_star").password("123456")
-                .role(Role.builder().privileges(Arrays.asList(privilege)).name("管理员").symbol(Role.Symbol.SYSTEM_ADMIN).build())
+//                .role(Role.builder().privileges(Arrays.asList(privilege)).name("管理员").symbol(Role.Symbol.SYSTEM_ADMIN).build())
                 .build();
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)

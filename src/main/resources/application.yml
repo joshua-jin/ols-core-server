@@ -3,6 +3,9 @@ logging:
 
 server:
   port: 8081
+  error:
+    whitelabel:
+      enabled: false
 spring:
   h2:
     console:
@@ -38,6 +41,8 @@ spring:
     ssl: false
 
 security:
+  basic:
+    enabled: false
   jwt:
     secret: ${JWT_SECRET:_SEMS_JWT_SECRET_201708240805987}
     expiration-in-seconds: 600

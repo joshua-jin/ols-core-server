@@ -2,10 +2,18 @@ package com.thoughtworks.nho.service.impl;
 
 import com.thoughtworks.nho.cofiguration.security.JWTUser;
 import com.thoughtworks.nho.cofiguration.security.LoginRequestUser;
+import com.thoughtworks.nho.cofiguration.security.RegisterRequestUser;
+import com.thoughtworks.nho.domain.User;
 import com.thoughtworks.nho.exception.InvalidCredentialException;
+import com.thoughtworks.nho.exception.InvalidPasswordException;
+import com.thoughtworks.nho.exception.InvalidUserException;
+import com.thoughtworks.nho.exception.UserExistedException;
 import com.thoughtworks.nho.repository.TokenAuthRepository;
+import com.thoughtworks.nho.repository.UserRepository;
 import com.thoughtworks.nho.service.AuthService;
+import com.thoughtworks.nho.service.UserService;
 import com.thoughtworks.nho.util.StringUtils;
+import com.thoughtworks.nho.util.UserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +50,14 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private UserService userService;
+
     @Override
     public JWTUser login(HttpServletResponse response, LoginRequestUser loginRequestUser) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestUser.getUsername(), loginRequestUser.getPassword()));
@@ -59,6 +76,26 @@ public class AuthServiceImpl implements AuthService {
         String key = PREFIX_BLACK_LIST + token;
         redisTemplate.opsForValue().set(key, token);
         redisTemplate.expire(key, expirationInSeconds, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public User register(RegisterRequestUser registerRequestUser) throws UserExistedException {
+        User user = new User();
+        user.setId(StringUtils.uuid());
+        if (registerRequestUser.getUsername().isEmpty() ||
+                registerRequestUser.getPassword().isEmpty() ||
+                registerRequestUser.getUsername() == null ||
+                registerRequestUser.getPassword() == null) {
+            throw new InvalidUserException("username or password is empty!");
+        }
+        if (userRepository.findByName(user.getName()) != null) {
+            throw new InvalidUserException("username or password is empty!");
+        }
+
+        user.setName(registerRequestUser.getUsername());
+        user.setPassword(passwordEncoder.encode(registerRequestUser.getPassword()));
+        userRepository.save(user);
+        return user;
     }
 
     @Override

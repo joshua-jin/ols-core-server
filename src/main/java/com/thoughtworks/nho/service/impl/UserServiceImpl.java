@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> listUsers() {
         return userRepository.findAll().stream().map(user ->
                 UserDTO.builder().id(user.getId()).name(user.getName())
-                        .realName(user.getRealName()).build())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -62,12 +62,13 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
-        Role role = user.getRole();
+//        Role role = user.getRole();
         return JWTUser.builder()
                 .username(user.getName())
                 .password(user.getPassword())
-                .role(user.getRole().getSymbol().name())
-                .privileges(role.getPrivileges().stream().map(Privilege::getSymbol).collect(toList()))
+//                .role(user.getRole().getSymbol().name())
+//                .privileges(role.getPrivileges().stream().map(Privilege::getSymbol).collect(toList()))
                 .build();
     }
+
 }

@@ -1,4 +1,7 @@
 package com.thoughtworks.nho.exception;
 
-public class InvalidPasswordException {
+public class InvalidPasswordException extends RuntimeException {
+    public InvalidPasswordException(String s) {
+        super(s);
+    }
 }
